@@ -1,0 +1,21 @@
+# Root level gitignore
+
+# Dependencies
+**/node_modules/
+
+# Environment Variables
+**/.env
+**/.env.*.local
+
+# Build Directories
+**/dist/
+**/build/
+
+# OS/Editor Files
+.DS_Store
+.vscode/
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
