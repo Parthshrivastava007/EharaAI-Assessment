@@ -39,11 +39,27 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // Routes
-app.use('/api/auth', require('./routes/authRoutes'));
-app.use('/api/projects', require('./routes/projectRoutes'));
-app.use('/api/tasks', require('./routes/taskRoutes'));
-app.use('/api/dashboard', require('./routes/dashboardRoutes'));
-app.use('/api/users', require('./routes/userRoutes'));
+const authRoutes = require('./routes/authRoutes');
+const projectRoutes = require('./routes/projectRoutes');
+const taskRoutes = require('./routes/taskRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+const userRoutes = require('./routes/userRoutes');
+
+// Support both prefixed and non-prefixed routes for flexibility on different hosting platforms
+app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes);
+
+app.use('/api/projects', projectRoutes);
+app.use('/projects', projectRoutes);
+
+app.use('/api/tasks', taskRoutes);
+app.use('/tasks', taskRoutes);
+
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/dashboard', dashboardRoutes);
+
+app.use('/api/users', userRoutes);
+app.use('/users', userRoutes);
 app.use('/api/debug', (req, res) => {
   const { debugData } = require('./controllers/debugController');
   debugData(req, res);
