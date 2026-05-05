@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'}/auth`;
+const BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api').replace(/\/$/, '');
+const API_URL = `${BASE_URL}/auth`;
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -21,12 +21,20 @@ export const AuthProvider = ({ children }) => {
   const signup = async (userData) => {
     try {
       setError(null);
-      const response = await axios.post(`${API_URL}/signup`, userData);
-      setUser(response.data);
-      localStorage.setItem('user', JSON.stringify(response.data));
-      return response.data;
+      const response = await fetch(`${API_URL}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Signup failed');
+      }
+      setUser(data);
+      localStorage.setItem('user', JSON.stringify(data));
+      return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Signup failed');
+      setError(err.message || 'Signup failed');
       throw err;
     }
   };
@@ -34,12 +42,20 @@ export const AuthProvider = ({ children }) => {
   const login = async (userData) => {
     try {
       setError(null);
-      const response = await axios.post(`${API_URL}/login`, userData);
-      setUser(response.data);
-      localStorage.setItem('user', JSON.stringify(response.data));
-      return response.data;
+      const response = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(userData),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+      setUser(data);
+      localStorage.setItem('user', JSON.stringify(data));
+      return data;
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(err.message || 'Login failed');
       throw err;
     }
   };
