@@ -62,8 +62,16 @@ const deleteTask = async (req, res) => {
 };
 
 const getMyTasks = async (req, res) => {
-  const tasks = await Task.find({ assignedTo: req.user._id })
+  let query = { assignedTo: req.user._id };
+
+  // If admin, show all tasks to allow tracking
+  if (req.user.role === 'Admin') {
+    query = {};
+  }
+
+  const tasks = await Task.find(query)
     .populate('project', 'name')
+    .populate('assignedTo', 'name email')
     .sort({ dueDate: 1 });
   res.json(tasks);
 };

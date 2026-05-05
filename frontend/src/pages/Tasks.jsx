@@ -181,8 +181,12 @@ const Tasks = () => {
     <div className="max-w-6xl mx-auto">
       <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-3">My Tasks</h1>
-          <p className="text-slate-400 text-lg">Stay on top of your responsibilities</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-3">
+            {user?.role === 'Admin' ? 'Team Tasks' : 'My Tasks'}
+          </h1>
+          <p className="text-slate-400 text-lg">
+            {user?.role === 'Admin' ? 'Track progress across all projects' : 'Stay on top of your responsibilities'}
+          </p>
         </div>
         {user?.role === 'Admin' && (
           <button onClick={() => setIsModalOpen(true)} className="btn-primary flex items-center gap-2">
@@ -198,6 +202,7 @@ const Tasks = () => {
             <tr className="border-b border-white/10 text-slate-400 text-[10px] uppercase tracking-[2px] font-bold">
               <th className="px-8 py-5">Task</th>
               <th className="px-6 py-5">Project</th>
+              {user?.role === 'Admin' && <th className="px-6 py-5">Assigned To</th>}
               <th className="px-6 py-5">Priority</th>
               <th className="px-6 py-5">Due Date</th>
               <th className="px-6 py-5">Status</th>
@@ -220,6 +225,14 @@ const Tasks = () => {
                       {task.project?.name || 'Unassigned'}
                     </span>
                   </td>
+                  {user?.role === 'Admin' && (
+                    <td className="px-6 py-6">
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{task.assignedTo?.name || 'Unassigned'}</span>
+                        <span className="text-[10px] text-slate-500">{task.assignedTo?.email}</span>
+                      </div>
+                    </td>
+                  )}
                   <td className="px-6 py-6">
                     <span className={clsx("text-sm font-bold", getPriorityColor(task.priority))}>
                       {task.priority}
@@ -261,7 +274,7 @@ const Tasks = () => {
         {tasks.length === 0 && (
           <div className="text-center py-20 text-slate-500">
             <CheckSquare size={48} className="mx-auto mb-4 opacity-10" />
-            <p>No tasks assigned to you</p>
+            <p>{user?.role === 'Admin' ? 'No tasks created yet' : 'No tasks assigned to you'}</p>
           </div>
         )}
       </div>
