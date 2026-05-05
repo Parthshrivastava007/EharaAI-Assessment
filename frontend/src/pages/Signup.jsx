@@ -11,16 +11,20 @@ const Signup = () => {
     password: '',
     role: 'Member'
   });
+  const [loading, setLoading] = useState(false);
   const { signup, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await signup(formData);
       navigate('/');
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,8 +90,8 @@ const Signup = () => {
 
           {error && <div className="text-red-400 bg-red-400/10 p-3 rounded-lg text-sm text-center">{error}</div>}
 
-          <button type="submit" className="w-full btn-primary">
-            Sign Up
+          <button type="submit" className="w-full btn-primary disabled:opacity-50" disabled={loading}>
+            {loading ? 'Creating account...' : 'Sign Up'}
           </button>
         </form>
 

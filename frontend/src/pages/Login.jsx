@@ -7,16 +7,20 @@ import { motion } from 'framer-motion';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const { login, error } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login({ email, password });
       navigate('/');
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,8 +63,8 @@ const Login = () => {
 
           {error && <div className="text-red-400 bg-red-400/10 p-3 rounded-lg text-sm text-center">{error}</div>}
 
-          <button type="submit" className="w-full btn-primary">
-            Login
+          <button type="submit" className="w-full btn-primary disabled:opacity-50" disabled={loading}>
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
 
