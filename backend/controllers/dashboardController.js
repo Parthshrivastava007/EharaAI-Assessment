@@ -14,34 +14,31 @@ const getStats = async (req, res) => {
     if (req.user.role === 'Admin') {
       projectCount = await Project.countDocuments();
       taskCount = await Task.countDocuments();
-      pendingTasks = await Task.countDocuments({ status: { $ne: 'Completed' } });
+      pendingTasks = await Task.countDocuments({ status: 'In Progress' }); // Specifically 'In Progress'
       completedTasks = await Task.countDocuments({ status: 'Completed' });
       overdueTasks = await Task.countDocuments({
         status: { $ne: 'Completed' },
         dueDate: { $lt: now }
       });
     } else {
-      const userProjects = await Project.find({
+      projectCount = await Project.countDocuments({
         $or: [
           { owner: req.user._id },
           { members: { $in: [req.user._id] } }
         ]
-      }).select('_id');
+      });
       
-      const projectIds = userProjects.map(p => p._id);
-
-      projectCount = projectIds.length;
-      taskCount = await Task.countDocuments({ project: { $in: projectIds } });
+      taskCount = await Task.countDocuments({ assignedTo: req.user._id });
       pendingTasks = await Task.countDocuments({ 
-        project: { $in: projectIds }, 
-        status: { $ne: 'Completed' } 
+        assignedTo: req.user._id, 
+        status: 'In Progress' 
       });
       completedTasks = await Task.countDocuments({ 
-        project: { $in: projectIds }, 
+        assignedTo: req.user._id, 
         status: 'Completed' 
       });
       overdueTasks = await Task.countDocuments({
-        project: { $in: projectIds },
+        assignedTo: req.user._id,
         status: { $ne: 'Completed' },
         dueDate: { $lt: now }
       });
@@ -56,7 +53,8 @@ const getStats = async (req, res) => {
     res.json({
       projectCount,
       taskCount,
-      pendingTasks,
+      activeTasks: pendingTasks, // Rename internally if helpful, but keep keys consistent with frontend
+      pendingTasks, 
       completedTasks,
       overdueTasks,
       statusStats
