@@ -30,8 +30,7 @@ app.use(cors({
   optionsSuccessStatus: 204
 }));
 
-// Manual Pre-flight handler (just in case)
-app.options('*', cors());
+// CORS is already handled by the app.use(cors(...)) middleware above
 
 // Logging middleware
 if (process.env.NODE_ENV === 'development') {
